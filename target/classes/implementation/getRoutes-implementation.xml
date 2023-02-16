@@ -37,7 +37,6 @@ payload map(value,index)->(
 	]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-					<logger level="INFO" doc:name="Logger" doc:id="1426348c-c601-4877-8ff2-9cc93220aecf" message="Logger Inside Cache" />
 				</ee:cache>
 	</sub-flow>
 	<sub-flow name="getRoutes-fastGoCall-subFlow" doc:id="0c7f7687-efab-4c1a-ad10-f00c2e2704db" >
@@ -71,10 +70,10 @@ payload map(value,index)->(  {
 	]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-					<logger level="INFO" doc:name="Logger" doc:id="ed1d4aa9-cd56-4163-94bf-ffef55efbd35" message="Logger Inside Cache" />
 				</ee:cache>
 	</sub-flow>
 	<sub-flow name="getRoutes-implementationSub_Flow" doc:id="e443c15f-735c-46cf-9907-4b88719c8bcf" >
+		<set-variable value="Routes" doc:name="Set Variable" doc:id="954078cf-108f-42b2-9283-c6acfc45e2f5" variableName="resource"/>
 		<choice doc:name="Choice" doc:id="1012e123-7fd7-4850-8166-1b91dcace39b" >
 			<when expression='#[vars.transportCompany == "fastGo"]' >
 				<flow-ref doc:name="Flow Reference" doc:id="d7bee2ab-bc9c-4b27-aee9-90f87764fb0c" name="getRoutes-fastGoCall-subFlow" />
@@ -93,7 +92,6 @@ payload map(value,index)->(  {
 						<flow-ref doc:name="Flow Reference" doc:id="36cc114a-2d21-49e5-8aa9-b2a708b754ce" name="getRoutes-travelOnTipCall-subFlow"/>
 					</route>
 				</scatter-gather>
-				<logger level="INFO" doc:name="Logger" doc:id="b523f81d-225c-4b86-bacc-3ed7a8560d0f" message="#[(payload.'0'.payload default []) ++ (payload.'1'.payload default [])]"/>
 				<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;(payload.'0'.payload default []) ++ (payload.'1'.payload default [])]" doc:name="Set Payload" doc:id="f354a8f9-36dc-413a-bbc6-dc552d35c86d" />
 			</otherwise>
 		</choice>
