@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+   <flow name="retrieveconsolidatedroutesandschedulesMobileAppexpapi-main">
+        <http:listener doc:name="Listener" doc:id="3e2d25ed-a249-436d-befa-52769846e0f4" config-ref="retrieveconsolidatedroutesandschedulesMobileAppexpapi-httpListenerConfig" path="/api/*"/>
+		<apikit:router config-ref="retrieveconsolidatedroutesandschedulesMobileAppexpapi-config" />
+		<error-handler ref="globalErrorHandlerError_Handler" />
+    </flow>
+    <flow name="retrieveconsolidatedroutesandschedulesMobileAppexpapi-console">
+        <http:listener config-ref="retrieveconsolidatedroutesandschedulesMobileAppexpapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="retrieveconsolidatedroutesandschedulesMobileAppexpapi-config" />
+		<error-handler ref="globalErrorHandlerError_Handler" />
+    </flow>
+    <sub-flow name="retrieveconsolidatedroutesandschedulesMobileAppexpapiSub_Flow" doc:id="2a8ea86e-afb8-401a-92df-c798e221b521" >
+		<ee:transform doc:name="Initialize Variables for Request Event Transform Message" doc:id="6de43eb8-e8cf-4db1-80f4-9f7d8ae6aa2f" >
+			<ee:variables >
+				<ee:set-variable variableName="transportType" ><![CDATA[attributes.uriParams.'transportType']]></ee:set-variable>
+				<ee:set-variable variableName="transportCompany" ><![CDATA[attributes.queryParams.'companyName']]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.transactionId]]></ee:set-variable>
+				<ee:set-variable variableName="departureLocation" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'departureLocation']]></ee:set-variable>
+				<ee:set-variable variableName="destinationLocation" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'destinationLocation']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<flow name="get:\booking\(transportType)\routes:retrieveconsolidatedroutesandschedulesMobileAppexpapi-config">
+        <flow-ref doc:name="Flow Reference" doc:id="cd751cd9-ef94-46cf-9cec-658891f742e4" name="retrieveconsolidatedroutesandschedulesMobileAppexpapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="15f93ead-d6f5-4c22-a588-81555105f142" message="Request Received for Routes BAPI For TransactionId: #[vars.transactionId]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="6cb38105-ce5f-486f-8c9d-4877d53d0e7b" name="getRoutes-implementationSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a654701e-1f7b-4044-aac7-9fa52bb6402e" message="Response Sent for Routes BAPI For TransactionId: #[vars.transactionId]"/>
+    </flow>
+    <flow name="get:\booking\(transportType)\schedules:retrieveconsolidatedroutesandschedulesMobileAppexpapi-config">
+        <flow-ref doc:name="Flow Reference" doc:id="7a1f375a-1d8c-4f8c-af04-7ad466392fcb" name="retrieveconsolidatedroutesandschedulesMobileAppexpapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7efd2a2a-08b5-4dfb-a7ae-efb5a9f395e3" message="Request Received for Schedules BAPI For TransactionId: #[vars.transactionId]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="6e5b1d93-6212-4779-98ec-d93eb2325049" name="getSchedules-implementationSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9809da7b-d626-44c3-b0cb-21a24386029f" message="Response Sent for Routes Schedules BAPI For TransactionId: #[vars.transactionId]"/>
+    </flow>
+</mule>
