@@ -63,10 +63,10 @@ payload map(value,index)->(  {
     "departureDateTime": value.departureDateTime,
     "travelRoute": {
       "destinationLocation": {
-        "locationDesc": (LocationMapping filter($.locationCode == value.tolocation))[0].LocationDesc
+        "locationDesc": (LocationMapping filter($.locationCode == value.toLocation))[0].LocationDesc
     },
       "originLocation": {
-        "locationDesc": (LocationMapping filter($.locationCode == value.fromlocation))[0].LocationDesc
+        "locationDesc": (LocationMapping filter($.locationCode == value.fromLocation))[0].LocationDesc
       }
     }
   }
